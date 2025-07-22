@@ -4,11 +4,18 @@ import { getAllRestaurants } from "../api/place";
 
 function AllRestaurants() {
     const [allData, setAlldata] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getAllRestaurants();
-            setAlldata(data.places);
+            try {
+                const data = await getAllRestaurants();
+                setAlldata(data.places);
+            } catch (error) {
+                console.log("데이터 호출 실패 : ", error);
+            } finally {
+                setIsLoading(false);
+            }
         };
         fetchData();
     }, []);
@@ -21,10 +28,8 @@ function AllRestaurants() {
     }, [allData]);
 
     return (
-        <div>
-            <div className="w-full h-1/2 bg-amber-300">
-                <Card allData={allData} />
-            </div>
+        <div className="w-full bg-amber-300">
+            {isLoading ? <div className="text-centerㅎ"> 데이터 불러오는중 ....</div> : <Card data={allData} />}
         </div>
     );
 }
