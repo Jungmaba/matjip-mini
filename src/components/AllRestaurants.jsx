@@ -5,6 +5,7 @@ import { getAllRestaurants } from "../api/place";
 function AllRestaurants() {
     const [allData, setAlldata] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -12,7 +13,7 @@ function AllRestaurants() {
                 const data = await getAllRestaurants();
                 setAlldata(data.places);
             } catch (error) {
-                console.log("데이터 호출 실패 : ", error);
+                setError(error?.message || "에러 발생");
             } finally {
                 setIsLoading(false);
             }
@@ -20,16 +21,11 @@ function AllRestaurants() {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        console.log("데이터:", allData);
-        if (allData.length > 0) {
-            console.log("첫 번째 맛집:", allData[0].name);
-        }
-    }, [allData]);
-
     return (
-        <div className="w-full bg-amber-300">
-            {isLoading ? <div className="text-centerㅎ"> 데이터 불러오는중 ....</div> : <Card data={allData} />}
+        <div className="w-full h-[600px] bg-amber-300 flex justify-center items-center">
+            {isLoading && <div className="text-center"> 데이터 불러오는중 ....</div>}
+            {error && <div className="text-center text-red-600 font-bold">에러 발생: {error}</div>}
+            {!isLoading && !error && allData && allData.length > 0 && <Card data={allData} />}
         </div>
     );
 }
